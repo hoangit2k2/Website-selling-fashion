@@ -1,0 +1,21 @@
+<div ng-controller="authority-ctrl">
+    <h3>Authoriza</h3>
+    <table ng-if="db" style="width: 100%" border = "1" >
+        <thead>
+            <tr>
+            <th></th>
+                <th ng-repeat = "role in db.roles">{{role.name}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat = "acc in db.accounts">
+                <th>{{acc.username}}</th>
+                <th ng-repeat = "role in db.roles">
+                    <input type="checkbox"
+                        ng-checked="index_of(acc.username,role.id) >= 0"
+                        ng-click = "update(acc.username,role.id)">
+                </th>
+            </tr>
+        </tbody>
+    </table>
+</div>

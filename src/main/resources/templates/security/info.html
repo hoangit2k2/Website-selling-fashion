@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org"
+	th:replace="~{/layout/index :: dynamic(~{::div})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div class="container">
+		
+			<ul>
+				<li>Username: <b>[[${#request.remoteUser}]]</b> </li>
+				<li>Is Admin?: <b>[[${#request.isUserInRole('DIRE')}]]</b> </li>
+			</ul>
+		<br>
+		<br>
+		<br>
+		<br>
+			<ul th:object = "${#request.userPrincipal}">
+				<li> Username: <b>[[*{name}]]</b> </li>
+				<li> Roles: <b>[[*{authorities}]]</b> </li>
+			</ul>
+	</div>
+</body>
+</html>

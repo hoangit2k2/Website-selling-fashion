@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"
+        integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Angular JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.min.js"></script>
+    <!-- ----------------------------------- -->
+    <style>
+        .o-fit-cover {
+            min-height: 100%;
+            min-width: 100%;
+            object-fit: cover;
+        }
+    </style>
+    <title>BVM - Spring boot</title>
+</head>
+
+<body>
+	
+    <main>
+		<!-- Form -->
+        <div class="container-xxl" ng-app="appProduct" ng-controller="prdControl">
+        	<!-- HEADER -->
+			<header >
+		        <h1 style="background-color:rgb(85, 157, 233) ;">Hello Word</h1>
+		    </header>
+        	
+        	<nav class="w-100 bg-warning p-1">
+        		<a class="btn btn-outline-primary" href="/product/list">Product</a>
+        		<a class="btn btn-outline-primary" href="/order/list">Order</a>
+        	</nav>
+        
+        	<!-- CONTENT -->
+            <div class="d-flex justify-content-center flex-wrap border">
+                <!-- Filter -->
+                <div class="col-4">
+                    <div class="p-3">
+                        <div class="bg-warning p-1">
+                            <h3 class="text-center text-white">Bộ lọc</h3>
+                        </div>
+                        <div class="border">
+                            <div class="mt-3 d-grid p-1">
+                                <label for="text" class="form-label fw-bold">Subject</label>
+                                <input class="rounded-3 text-end pe-3" type="text" id="text" ng-model="fil.subject" ng-init="fil.quantity=undefined">
+                            </div>
+                            <div class="mt-3 d-grid p-1">
+                                <label for="quantity" class="form-label fw-bold">Quantity</label>
+                                <input class="rounded-3 text-end" type="number" id="quantity" ng-model="fil.quantity" ng-init="fil.quantity=5" min="0" max="{{(products|filter:{available: fil.open}|filter:{name:fil.subject}).length}}">
+                            </div>
+                            <div class="mt-3 d-grid p-1">
+                                <label for="page" class="form-label fw-bold">Page</label>
+                                <input class="rounded-3 text-end" type="number" id="page" ng-model="fil.page" ng-init="fil.page=0" min="0"
+                                    max="{{((products|filter:{available: fil.open}|filter:{name:fil.subject}).length - ((products|filter:{available: fil.open}|filter:{name:fil.subject}).length % fil.quantity))  /  fil.quantity}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form control -->
+                <div class="col-8">
+                    <!-- Form actions -->
+                    <form action="#/" class="m-auto p-3">
+                        <!-- Subject -->
+                        <div class="bg-warning p-1">
+                            <h3 class="text-center text-white">Quản lý sản phẩm</h3>
+                        </div>
+                        <!-- Message -->
+                        <div class="mt-1 p-1 ps-3 bg-dark rounded-3" ng-if="message">
+                            <b class="text-warning" ng-bind="message"></b>
+                        </div>
+                        <!-- Content -->
+                        <div class="d-flex flex-wrap">
+                            <!-- fields -->
+                            <div class="col-9">
+                                <div class="row align-content-center mt-1">
+                                    <div class="col-2 text-end">
+                                        <label for="id" class="col-form-label fw-bold">Id</label>
+                                    </div>
+                                    <div class="col-10">
+                                        <input type="number" id="id" class="form-control" placeholder="Mã sản phẩm" ng-model="product.id" value="" >
+                                    </div>
+                                </div>
+                                <div class="row align-content-center mt-1">
+                                    <div class="col-2 text-end">
+                                        <label for="name" class="col-form-label fw-bold">Name</label>
+                                    </div>
+                                    <div class="col-10">
+                                        <input type="text" id="name" class="form-control" placeholder="Tên sản phẩm" ng-model="product.name">
+                                    </div>
+                                </div>
+                                <div class="row align-content-center mt-1">
+                                    <div class="col-2 text-end">
+                                        <label for="price" class="col-form-label fw-bold">Price</label>
+                                    </div>
+                                    <div class="col-10">
+                                        <input type="number" step=".001" id="price" class="form-control" placeholder="Giá sản phẩm" ng-model="product.price">
+                                    </div>
+                                </div>
+                                <div class="row align-content-center mt-1">
+                                    <div class="col-2 text-end">
+                                        <label for="date" class="col-form-label fw-bold">Date</label>
+                                    </div>
+                                    <div class="col-10">
+                                        <input type="date" id="date" class="form-control" ng-model="product.createDate">
+                                    </div>
+                                </div>
+                                <div class="row align-content-center mt-1 align-items-center">
+                                    <div class="col-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-4 text-end">
+                                                <label for="available" class="col-form-label fw-bold">Available</label>
+                                            </div>
+                                            <div class="col-8">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="available" ng-model="product.available">
+                                                    <label class="form-check-label" for="available" ng-bind="(product.available ? 'Opent' : 'Close')+' access'"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row align-items-center">
+                                            <div class="col-4 text-end">
+                                                <label for="category" class="col-form-label fw-bold">Category</label>
+                                            </div>
+                                            <div class="col-8">
+                                                <select class="form-select text-end text-primary fw-bold" aria-label="Default select example" ng-model="product.category.id">
+                                                    <option value="" class="text-danger fw-bold">NONE CATEGORY</option>
+                                                    <option ng-repeat="cate in categories" value="{{cate.id}}" ng-bind="cate.name"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row align-content-center mt-1">
+                                    <div class="col-2 text-end">
+                                        <label for="image" class="col-form-label fw-bold">Image</label>
+                                    </div>
+                                    <div class="col-10">
+                                        <input type="text" id="image" class="form-control" placeholder="Đường dẫn hình ảnh" ng-model="product.image">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- image -->
+                            <div class="col-3 p-1 pe-0">
+                                <img ng-src="{{product.image ? product.image : defaultImg}}" alt="{{product.name ? product.name : 'undefined'}}" class="o-fit-cover w-100 h-100 rounded-3 border">
+                            </div>
+                        </div>
+                        
+                        <!-- button-group actions -->
+                        <div class="d-flex justify-content-between align-items-center rounded-3 border p-1 mt-1">
+                            <div class="fw-bold">Actions</div>
+                            <div class="btn-group bg-dark rounded-3">
+                                <button class="btn btn-outline-success" ng-click="create()">
+                                    <i class="fa-solid fa-bookmark"></i>&nbsp;save
+                                </button>
+                                <button class="btn btn-outline-warning" ng-click="update(product.id)">
+                                    <i class="fa-solid fa-upload"></i>&nbsp;update
+                                </button>
+                                <button class="btn btn-outline-danger" ng-click="delete(product.id)">
+                                    <i class="fa-solid fa-trash-can"></i>&nbsp;delete
+                                </button>
+                                <button class="btn btn-outline-secondary" type="reset">
+                                    <i class="fa-solid fa-rotate"></i>&nbsp;reset
+                                </button>
+                                <a class="btn btn-outline-light" href="javascript:location.reload()">
+                                    <i class="fa-solid fa-arrow-rotate-right"></i>&nbsp;reload
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Data sheet -->
+                <div class="col-12">
+                    <table class="table table-hover table-dark">
+                        <thead class="border-bottom border-info">
+                            <!-- Heading and columns name -->
+                            <tr class="text-center" ng-model="fil.orderBy">
+                                <th>IMAGE</th>
+                                <th>No.({{(products|filter:{available: fil.open}).length}})</th>
+                                <th class="text-end form-switch">
+                                    <input class="form-check-input {{fil.open==undefined ? 'bg-danger': fil.open==true ? 'bg-primary' : 'bg-light'}}" type="checkbox" ng-model="fil.open" ng-init="fil.open=true">
+                                    AVAILABLE
+                                    <a href="" ng-click="fil.open=undefined" class="{{fil.open!=null ? 'text-danger':'text-primary'}}">ALL</a>
+                                </th>
+                                <th><a href="" ng-click="fil.orderBy=(fil.orderBy=='id')?'-id':'id'">ID</a></th>
+                                <th><a href="" ng-click="fil.orderBy=(fil.orderBy=='name')?'-name':'name'">NAME</a></th>
+                                <th><a href="" ng-click="fil.orderBy=(fil.orderBy=='price')?'-price':'price'">PRICE</a></th>
+                                <th>DATE</th>
+                                <th>
+                                    <select class="form-select text-end text-primary fw-bold" aria-label="Default select example" ng-model="fil.cate">
+                                        <option value="" class="text-warning fw-bold">ALL CATEGORY</option>
+                                        <option ng-repeat="cate in categories" value="{{cate.name}}" ng-bind="cate.name"></option>
+                                    </select>
+                                </th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <!-- Show data -->
+                        <tbody>
+                            <tr ng-repeat="(No, e) in products | filter:{available:fil.open} | filter:{category:{name:fil.cate}} | filter:{name:fil.subject} | orderBy:fil.orderBy | limitTo: fil.quantity:fil.page*fil.quantity" 
+                                style="vertical-align: baseline;" class="{{e.available ? 'text-primary' : 'text-danger'}}">
+                                <td class="text-center"><img width="128px" ng-src="{{e.image}}" alt="{{e.name}}"></td>
+                                <td class="text-center" ng-bind="No"></td>
+                                <td class="text-center"><i class="fa-solid {{e.available ? 'fa-lock-open' : 'fa-lock'}}" ng-bind="e.available ? '&nbsp;OPEN ' : '&nbsp;CLOSE '"></i></td>
+                                <td class="text-end" ng-bind="e.id"></td>
+                                <td class="text-start" ng-bind="e.name"></td>
+                                <td class="text-end" ng-bind="e.price"></td>
+                                <td class="text-center" ng-bind="e.createDate | date: 'EEEE dd-MM-yyyy'"></td>
+                                <td class="text-end" ng-bind="e.category.name"></td>
+                                <td class="text-end">
+                                    <button class="btn btn-info" ng-click="read(e)">GET</button>
+                                    <button class="btn btn-danger" ng-click="delete(e.id)">DELETE</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Angular JS -->
+        <script>            const appProduct = angular.module("appProduct", ["ngRoute"]);
+
+            const defaultImg = "https://www.ikks.com/dw/image/v2/BFQN_PRD/on/demandware.static/-/Sites-ikks_master_v0/default/dw943f40dd/produits/XR60075-10/IKKS-BODY-MILK-_-PERSONNALISER-EN-COTON-BIO-BEBE--XR60075-10_8.gif?sw=580&sh=746";
+            const hostio = "http://localhost:8080";
+            const entity = "rest/products";
+
+            appProduct.controller("prdControl", function ($scope, $http) {
+                $scope.defaultImg = defaultImg;
+                
+
+                // get data on host
+                $http.get(getLink(null)).then(
+                    (result) => {
+                        if(result.status == 200){
+                            $scope.refresh();
+                            $scope.categories = result.data.categories;
+                            $scope.products = result.data.products;
+                           	console.log('product.id')
+                        } else {
+                            console.log(`Status is ${result.status}`);
+                        }
+                    }
+                ).catch((err) => console.error(`Cannot get data on host ${hostio + "/" + entity}`, err));
+
+                /**
+                 * ---------------------------------------------------------------- CRUD
+                 */
+                // function create
+                $scope.create = function () {
+                    if(!$scope.exist()) $http.post(getLink(), $scope.product).then(result => {
+                        if(result.status == 200){
+                            $scope.products.unshift(result.data);
+                            $scope.refresh(`Save the ${$scope.product.name} successfully.`)
+                            $scope.product = {};
+                        } else $scope.refresh(`Save ${$scope.product.name} failed!`)
+                    }).catch(err => {
+                        $scope.refresh(`Error saving ${$scope.product.name}!`)
+                        console.error(`Error saving ${$scope.product.name}`, err);
+                    }); else $scope.refresh(`${$scope.product ? $scope.product.id : 'Product'} already exists, cannot save!`)
+                }
+
+                // function update
+                $scope.update = function (key) {
+                    if($scope.exist()) $http.put(getLink(), $scope.product).then(result => {
+                        if(result.status == 200){
+                            $scope.products[$scope.getIndex(key)] = {...$scope.product}
+                            $scope.refresh(`Update the ${$scope.product.name} successfully.`)
+                            $scope.product = {};
+                        } else $scope.refresh(`Update ${$scope.product.name} failed!`)
+                    }).catch(err => {
+                        $scope.refresh(`Error updating ${$scope.product.name}!`)
+                        console.error(`Error updating ${$scope.product.name}`, err);
+                    }); else $scope.refresh(`${$scope.product ? $scope.product.id : 'Product'} doesn't exists, cannot update!`)
+                }
+
+                // function delete
+                $scope.delete = function (key) {
+                    if($scope.exist()) $http.delete(getLink(key)).then(result => {
+                        if(result.status == 200){
+                            $scope.products.splice($scope.getIndex(key),1);
+                            $scope.refresh(`Delete the ${$scope.product.name} successfully.`)  
+                            $scope.product = {};
+                        } else if(result.status == 500) $scope.refresh(`Cannot delete ${$scope.product.name}`)
+                    }).catch(err => {
+                        $scope.refresh(`Cannot delete ${$scope.product.name} references id Orders table!\n${err.data.message}`)
+                        console.error(`Error delete ${$scope.product.name}`, err);
+                    }); else $scope.refresh(`${$scope.product ? $scope.product.id : 'Product'} doesn't exists, cannot delete!`)
+                }
+
+
+
+                // _____________________________________________ SUPPORTS
+                
+
+                $scope.read = function(entity){
+                    $scope.product = {...entity};
+                    $scope.product.createDate = new Date(entity.createDate);
+                    $scope.refresh(`Lấy thông tin ${$scope.product.name}`);
+                }
+
+                // function refresh
+                $scope.refresh = function (message) {
+                    $scope.message = message == null || message == undefined ? "form được làm mới." : message;
+                }
+
+                $scope.getIndex = function(key){
+                    if(!$scope.product) return -1;
+                    else if(!key) key = $scope.product.id;
+                    for (let index = 0; index < $scope.products.length; index++) {
+                        if($scope.products[index].id == key) return index;
+                    }
+                    return -1;
+                }
+
+                // check entity exists
+                $scope.exist = function(){
+                    return this.getIndex() > -1;
+                }
+                
+            });
+
+            // config url path
+            appProduct.config(function ($routeProvider) {
+                $routeProvider.when(
+                    "/home", { templateUrl: "/index.html" }
+                ).when(
+                    "/manager/:page", { templateUrl: "pages/productDetail.html", controller: "managerCtrl" }
+                ).otherwise(
+                    { redirectTo: "/home" }
+                );
+            });
+
+            // link support
+            function getLink(id) {
+                return `${hostio}/${entity}${id == undefined || id == null ? "" : "/" + id}`;
+            };
+        </script>
+    </main>
+</body>
+
+</html>
